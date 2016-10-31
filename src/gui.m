@@ -22,7 +22,7 @@ function varargout = gui(varargin)
 
 % Edit the above text to modify the response to help gui
 
-% Last Modified by GUIDE v2.5 27-Oct-2016 17:31:55
+% Last Modified by GUIDE v2.5 31-Oct-2016 18:47:43
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -147,5 +147,22 @@ function pushbutton1_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-[FileName,PathName,FilterIndex] = uigetfile;
+[FileName, PathName, ~] = uigetfile;
 load(fullfile(PathName, FileName))
+set(handles.text10, 'String', ['Dataset: ' FileName]); 
+
+
+% --- Executes on button press in pushbutton2.
+function pushbutton2_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton2 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+[FileName, PathName, ~] = uigetfile;
+load(fullfile(PathName, FileName))
+set(handles.text9, 'String', ['Network: ' FileName]); 
+
+% --- Executes on button press in pushbutton3.
+function pushbutton3_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton3 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
