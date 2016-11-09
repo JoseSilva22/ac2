@@ -172,21 +172,26 @@ net_type = contents{get(handles.popupmenu1,'Value')};
 contents = cellstr(get(handles.popupmenu2,'String'));
 act_func = contents{get(handles.popupmenu2,'Value')};
 num_layers = str2double(get(handles.edit1,'String'));
-X = evalin('base', 'FeatVectSel');
+X = evalin('base', 'FeatVectSel')';
 Y = evalin('base', 'Trg');
+Y = gen_target_vec(Y)';
 
-if strcmp('Network', get(handles.text9, 'String'))    
-    net = gen_network(net_type, act_func, num_layers, X, Y);
+if strcmp('Network', get(handles.text9, 'String'))
+    [X_train, Y_train] = getTrainData(X, Y);
+    net = gen_network(net_type, act_func, num_layers, X_train, Y_train);
 else
     net = evalin('base', 'net');
 end
 
 %test
-[~,~,testInd] = dividerand(length(Trg));
-res = net(X(testInd));
+[~,~,testInd] = dividerand(length(Y));
+res = net(X(:,testInd))';
+res = double(bsxfun(@eq, res, max(res, [], 2)));
+res = res(:,2:3);
 
 %compare with expected outputs to get metrics
-expected = Y(testInd);
+%expected = Y(:,testInd)';
+expected = Y(2:3,testInd)';
 TP = sum ( res == 1 & expected == 1 );
 FP = sum ( res == 1 & expected == 0 );
 FN = sum ( res == 0 & expected == 1 );

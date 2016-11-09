@@ -7,7 +7,7 @@ function net = gen_network(type, actFunc, layers, x, y)
     elseif strcmp(type,'feedforwardnet')
         hLayers = repmat(29, 1, layers-1);
         net = feedforwardnet(hLayers);
-    
+        
     elseif strcmp(type,'newrb')
         net = newrb( input', expectedOutput', goal, rbfSpread, maxEpochs);
     
@@ -24,7 +24,7 @@ function net = gen_network(type, actFunc, layers, x, y)
     end
     
     %train it
-    %net = train(net, x, y);
+    net = train(net, x, y);
     
     %save it
     name = strcat(type,'.mat');
