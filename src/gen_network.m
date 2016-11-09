@@ -1,4 +1,5 @@
-function net = gen_network(type, actFunc, layers, x_train, y_train)
+function net = gen_network(type, actFunc, layers, x, y)
+
     if strcmp(type,'cascadeforwardnet')
         hLayers = repmat(29, 1, layers-1);
         net = cascadeforwardnet(hLayers);
@@ -23,7 +24,7 @@ function net = gen_network(type, actFunc, layers, x_train, y_train)
     end
     
     %train it
-    %net = train(net, x_train, y_train);
+    %net = train(net, x, y);
     
     %save it
     name = strcat(type,'.mat');

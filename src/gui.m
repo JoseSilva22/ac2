@@ -148,7 +148,7 @@ function pushbutton1_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 [FileName, PathName, ~] = uigetfile;
-load(fullfile(PathName, FileName))
+evalin('base',['load ' fullfile(PathName, FileName)]);
 set(handles.text10, 'String', ['Dataset: ' FileName]); 
 
 
@@ -158,7 +158,7 @@ function pushbutton2_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 [FileName, PathName, ~] = uigetfile;
-load(fullfile(PathName, FileName))
+evalin('base',['load ' fullfile(PathName, FileName)]);
 set(handles.text9, 'String', ['Network: ' FileName]); 
 
 % --- Executes on button press in pushbutton3.
@@ -166,3 +166,35 @@ function pushbutton3_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton3 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+contents = cellstr(get(handles.popupmenu1,'String'));
+net_type = contents{get(handles.popupmenu1,'Value')};
+contents = cellstr(get(handles.popupmenu2,'String'));
+act_func = contents{get(handles.popupmenu2,'Value')};
+num_layers = str2double(get(handles.edit1,'String'));
+X = evalin('base', 'FeatVectSel');
+Y = evalin('base', 'Trg');
+
+if strcmp('Network', get(handles.text9, 'String'))    
+    net = gen_network(net_type, act_func, num_layers, X, Y);
+else
+    net = evalin('base', 'net');
+end
+
+%test
+[~,~,testInd] = dividerand(length(Trg));
+res = net(X(testInd));
+
+%compare with expected outputs to get metrics
+expected = Y(testInd);
+TP = sum ( res == 1 & expected == 1 );
+FP = sum ( res == 1 & expected == 0 );
+FN = sum ( res == 0 & expected == 1 );
+TN = sum ( res == 0 & expected == 0 );
+P = sum ( expected == 1);
+N = sum ( expected == 0);
+SE = TP / ( TP + FN ) * 100;
+SP = TN / ( TN + FP ) * 100;
+
+%put results in GUI
+
