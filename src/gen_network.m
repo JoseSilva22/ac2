@@ -14,17 +14,21 @@ function net = gen_network(type, layers, x, y, dataset)
     
     elseif strcmp(type,'layrecnet')
         net = layrecnet();
-        [Xs,Xi,Ai,Ts] = preparets(net,x,y);
-        %net = train(net,Xs,Ts,Xi,Ai);
-        %Y = net(Xs,Xi,Ai);
-    
+        
     elseif strcmp(type, 'patternnet')
         hLayers = repmat(29, 1, layers-1);
         net = patternnet(hLayers);
     end
     
     %train it
-    net = train(net, x, y);
+    if ~strcmp(type,'layrecnet')
+        net = train(net, x, y);
+    else
+        x = con2seq(x);
+        y = con2seq(y);
+        [Xs,Xi,Ai,Ts] = preparets(net,x,y);
+        net = train(net,Xs,Ts,Xi,Ai);
+    end
     
     %save it
     name = strcat(type,dataset);

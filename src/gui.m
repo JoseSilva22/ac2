@@ -184,7 +184,14 @@ end
 
 %test
 [~,~,testInd] = dividerand(length(Y));
-res = net(X(:,testInd))';
+if ~strcmp(net_type,'layrecnet')
+    X = con2seq(X);
+    Y = con2seq(Y);
+    [Xs,Xi,Ai,~] = preparets(net,X,Y);
+    res = net(Xs,Xi,Ai);
+else
+    res = net(X(:,testInd))';
+end
 res = double(bsxfun(@eq, res, max(res, [], 2)));
 res = res(:,2:3);
 
@@ -197,7 +204,7 @@ FN = sum ( res == 0 & expected == 1 );
 TN = sum ( res == 0 & expected == 0 );
 P = sum ( expected == 1);
 N = sum ( expected == 0);
-SE = TP / ( TP + FN ) * 100;
-SP = TN / ( TN + FP ) * 100;
+SE = TP / ( TP + FN ) * 100
+SP = TN / ( TN + FP ) * 100
 
 %put results in GUI
