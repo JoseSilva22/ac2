@@ -22,7 +22,7 @@ function varargout = gui(varargin)
 
 % Edit the above text to modify the response to help gui
 
-% Last Modified by GUIDE v2.5 31-Oct-2016 18:47:43
+% Last Modified by GUIDE v2.5 11-Nov-2016 17:11:40
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -169,8 +169,6 @@ function pushbutton3_Callback(hObject, eventdata, handles)
 
 contents = cellstr(get(handles.popupmenu1,'String'));
 net_type = contents{get(handles.popupmenu1,'Value')};
-contents = cellstr(get(handles.popupmenu2,'String'));
-act_func = contents{get(handles.popupmenu2,'Value')};
 num_layers = str2double(get(handles.edit1,'String'));
 X = evalin('base', 'FeatVectSel')';
 Y = evalin('base', 'Trg');
@@ -178,7 +176,8 @@ Y = gen_target_vec(Y)';
 
 if strcmp('Network', get(handles.text9, 'String'))
     [X_train, Y_train] = getTrainData(X, Y);
-    net = gen_network(net_type, act_func, num_layers, X_train, Y_train);
+    dataset_name = get(handles.text10, 'String');
+    net = gen_network(net_type, num_layers, X_train, Y_train, dataset_name(10:end));
 else
     net = evalin('base', 'net');
 end
@@ -202,4 +201,3 @@ SE = TP / ( TP + FN ) * 100;
 SP = TN / ( TN + FP ) * 100;
 
 %put results in GUI
-
