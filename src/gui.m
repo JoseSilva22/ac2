@@ -180,15 +180,25 @@ if strcmp('Network', get(handles.text9, 'String'))
     net = gen_network(net_type, num_layers, X_train, Y_train, dataset_name(10:end));
 else
     net = evalin('base', 'net');
+    net_type = get(handles.text9, 'String');
+    net_type = net_type(10:strfind(net_type,'net')+2);
 end
 
 %test
+dataset_name = get(handles.text10, 'String');
+fileID = fopen(strcat('res/',net_type,dataset_name(10:end-4)),'w');
+
+for i=1:30
 [~,~,testInd] = dividerand(length(Y));
-if ~strcmp(net_type,'layrecnet')
+if strcmp(net_type,'layrecnet')
     X = con2seq(X);
     Y = con2seq(Y);
     [Xs,Xi,Ai,~] = preparets(net,X,Y);
     res = net(Xs,Xi,Ai);
+    disp(size(res))
+    disp(size(Y))
+    res = cell2mat(seq2con(res));
+    Y = cell2mat(seq2con(Y));
 else
     res = net(X(:,testInd))';
 end
@@ -198,13 +208,17 @@ res = res(:,2:3);
 %compare with expected outputs to get metrics
 %expected = Y(:,testInd)';
 expected = Y(2:3,testInd)';
-TP = sum ( res == 1 & expected == 1 );
-FP = sum ( res == 1 & expected == 0 );
-FN = sum ( res == 0 & expected == 1 );
-TN = sum ( res == 0 & expected == 0 );
-P = sum ( expected == 1);
-N = sum ( expected == 0);
-SE = TP / ( TP + FN ) * 100
-SP = TN / ( TN + FP ) * 100
-
+% TP = sum(sum( res == 1 & expected == 1 ,2));
+% FP = sum(sum( res == 1 & expected == 0 ,2));
+% FN = sum(sum( res == 0 & expected == 1 ,2));
+% TN = sum(sum( res == 0 & expected == 0 ,2));
+%SE = TP / ( TP + FN ) * 100;
+%SP = TN / ( TN + FP ) * 100;
+CP = classperf(expected, res);
+SE = CP.Sensitivity*100;
+SP = CP.Specificity*100;
+fprintf(fileID, '%.3f %.3f\n', SE, SP);
+end
+fclose(fileID);
+disp('Done!');
 %put results in GUI
