@@ -185,26 +185,28 @@ else
 end
 
 %test
-dataset_name = get(handles.text10, 'String');
+%dataset_name = get(handles.text10, 'String');
 %fileID = fopen(strcat('res/',net_type,dataset_name(10:end-4)),'w');
+%fprintf(fileID, 'pre-ictal-SE pre-ictal-SP ictal-SE ictal-SP\n');
 
 %for i=1:30
 [~,~,testInd] = dividerand(length(Y));
 if strcmp(net_type,'layrecnet')
-    X = con2seq(X);
-    Y = con2seq(Y);
-    [Xs,Xi,Ai,~] = preparets(net,X,Y);
+    X_seq = con2seq(X(:,testInd));
+    Y_seq = con2seq(Y(:,testInd));
+    [Xs,Xi,Ai,~] = preparets(net,X_seq,Y_seq);
     res = net(Xs,Xi,Ai);
-    res = cell2mat(seq2con(res));
-    Y = cell2mat(seq2con(Y));
+    res = cell2mat(res)';
+    expected = cell2mat(Y_seq)';
+    expected = expected(3:end,2:3);
 else
     res = net(X(:,testInd))';
+    expected = Y(2:3,testInd)';
 end
-res = double(bsxfun(@eq, res, max(res, [], 2)));
+res = double(bsxfun(@eq, res, max(res, [], 2))); %output ex: [0.8 0.1 0.1 0.1] -> [1 0 0 0]
 res = res(:,2:3);
 
 %compare with expected outputs to get metrics
-expected = Y(2:3,testInd)';
 
 CP = classperf(expected(:,1), res(:,1));
 pre_SE = CP.Sensitivity*100;
@@ -215,6 +217,8 @@ ict_SP = CP.Specificity*100;
 
 %fprintf(fileID, '%.3f %.3f %.3f %.3f\n', pre_SE, pre_SP, ict_SE, ict_SP);
 %end
+
 %fclose(fileID);
 disp('Done!');
+
 %put results in GUI
