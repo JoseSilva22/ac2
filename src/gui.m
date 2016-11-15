@@ -195,8 +195,6 @@ if strcmp(net_type,'layrecnet')
     Y = con2seq(Y);
     [Xs,Xi,Ai,~] = preparets(net,X,Y);
     res = net(Xs,Xi,Ai);
-    disp(size(res))
-    disp(size(Y))
     res = cell2mat(seq2con(res));
     Y = cell2mat(seq2con(Y));
 else
