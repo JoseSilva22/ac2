@@ -186,9 +186,9 @@ end
 
 %test
 dataset_name = get(handles.text10, 'String');
-fileID = fopen(strcat('res/',net_type,dataset_name(10:end-4)),'w');
+%fileID = fopen(strcat('res/',net_type,dataset_name(10:end-4)),'w');
 
-for i=1:30
+%for i=1:30
 [~,~,testInd] = dividerand(length(Y));
 if strcmp(net_type,'layrecnet')
     X = con2seq(X);
@@ -204,19 +204,17 @@ res = double(bsxfun(@eq, res, max(res, [], 2)));
 res = res(:,2:3);
 
 %compare with expected outputs to get metrics
-%expected = Y(:,testInd)';
 expected = Y(2:3,testInd)';
-% TP = sum(sum( res == 1 & expected == 1 ,2));
-% FP = sum(sum( res == 1 & expected == 0 ,2));
-% FN = sum(sum( res == 0 & expected == 1 ,2));
-% TN = sum(sum( res == 0 & expected == 0 ,2));
-%SE = TP / ( TP + FN ) * 100;
-%SP = TN / ( TN + FP ) * 100;
-CP = classperf(expected, res);
-SE = CP.Sensitivity*100;
-SP = CP.Specificity*100;
-fprintf(fileID, '%.3f %.3f\n', SE, SP);
-end
-fclose(fileID);
+
+CP = classperf(expected(:,1), res(:,1));
+pre_SE = CP.Sensitivity*100;
+pre_SP = CP.Specificity*100;
+CP = classperf(expected(:,2), res(:,2));
+ict_SE = CP.Sensitivity*100;
+ict_SP = CP.Specificity*100;
+
+%fprintf(fileID, '%.3f %.3f %.3f %.3f\n', pre_SE, pre_SP, ict_SE, ict_SP);
+%end
+%fclose(fileID);
 disp('Done!');
 %put results in GUI
