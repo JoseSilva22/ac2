@@ -185,11 +185,11 @@ else
 end
 
 %test
-%dataset_name = get(handles.text10, 'String');
-%fileID = fopen(strcat('res/',net_type,dataset_name(10:end-4)),'w');
-%fprintf(fileID, 'pre-ictal-SE pre-ictal-SP ictal-SE ictal-SP\n');
+dataset_name = get(handles.text10, 'String');
+fileID = fopen(strcat('res/',net_type,dataset_name(10:end-4)),'w');
+fprintf(fileID, 'pre-ictal-SE pre-ictal-SP ictal-SE ictal-SP\n');
 
-%for i=1:30
+for i=1:30
 [~,~,testInd] = dividerand(length(Y));
 if strcmp(net_type,'layrecnet')
     X_seq = con2seq(X(:,testInd));
@@ -215,10 +215,10 @@ CP = classperf(expected(:,2), res(:,2));
 ict_SE = CP.Sensitivity*100;
 ict_SP = CP.Specificity*100;
 
-%fprintf(fileID, '%.3f %.3f %.3f %.3f\n', pre_SE, pre_SP, ict_SE, ict_SP);
-%end
+fprintf(fileID, '%.3f %.3f %.3f %.3f\n', pre_SE, pre_SP, ict_SE, ict_SP);
+end
 
-%fclose(fileID);
+fclose(fileID);
 disp('Done!');
 
 %put results in GUI
