@@ -22,7 +22,7 @@ function varargout = gui(varargin)
 
 % Edit the above text to modify the response to help gui
 
-% Last Modified by GUIDE v2.5 11-Nov-2016 17:11:40
+% Last Modified by GUIDE v2.5 17-Nov-2016 17:51:15
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -185,11 +185,11 @@ else
 end
 
 %test
-dataset_name = get(handles.text10, 'String');
-fileID = fopen(strcat('res/',net_type,dataset_name(10:end-4)),'w');
-fprintf(fileID, 'pre-ictal-SE pre-ictal-SP ictal-SE ictal-SP\n');
+%dataset_name = get(handles.text10, 'String');
+%fileID = fopen(strcat('res/',net_type,dataset_name(10:end-4)),'w');
+%fprintf(fileID, 'pre-ictal-SE pre-ictal-SP ictal-SE ictal-SP\n');
 
-for i=1:30
+%for i=1:30
 [~,~,testInd] = dividerand(length(Y));
 if strcmp(net_type,'layrecnet')
     X_seq = con2seq(X(:,testInd));
@@ -215,10 +215,22 @@ CP = classperf(expected(:,2), res(:,2));
 ict_SE = CP.Sensitivity*100;
 ict_SP = CP.Specificity*100;
 
-fprintf(fileID, '%.3f %.3f %.3f %.3f\n', pre_SE, pre_SP, ict_SE, ict_SP);
-end
+%fprintf(fileID, '%.3f %.3f %.3f %.3f\n', pre_SE, pre_SP, ict_SE, ict_SP);
+%end
 
-fclose(fileID);
+%fclose(fileID);
 disp('Done!');
 
 %put results in GUI
+t = get(handles.uitable1);
+t.Data = {pre_SE, pre_SP;ict_SE, ict_SP};
+set(handles.uitable1, 'Data', t.Data);
+
+
+% --- Executes during object creation, after setting all properties.
+function uitable1_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to uitable1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+set(hObject, 'Data', cell(2));
+set(hObject, 'RowName', {'Pre-Ictal', 'Ictal'}, 'ColumnName', {'Sensitivity', 'Specificity'});
